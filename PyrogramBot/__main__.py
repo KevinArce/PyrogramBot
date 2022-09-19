@@ -14,9 +14,9 @@ async def get_info(app):
     global BOT_ID, BOT_NAME, BOT_USERNAME, BOT_DC_ID
     getme = await app.get_me()
     BOT_ID = getme.id
-    
+
     if getme.last_name:
-        BOT_NAME = getme.first_name + " " + getme.last_name
+        BOT_NAME = f"{getme.first_name} {getme.last_name}"
     else:
         BOT_NAME = getme.first_name
     BOT_USERNAME = getme.username
@@ -32,7 +32,7 @@ async def start_bot():
     await get_info(app)
 
     for module in ALL_MODULES:
-        imported_module = importlib.import_module("PyrogramBot.modules." + module)
+        imported_module = importlib.import_module(f"PyrogramBot.modules.{module}")
         if (
             hasattr(imported_module, "__MODULE__")
             and imported_module.__MODULE__
@@ -110,13 +110,9 @@ async def help_button(client, query):
     create_match = re.match(r"help_create", query.data)
 
     if mod_match:
-        module = mod_match.group(1)
-        text = (
-            "{} **{}**:\n".format(
-                "Here is the help for", HELPABLE[module].__MODULE__
-            )
-            + HELPABLE[module].__HELP__
-        )
+        module = mod_match[1]
+        text = f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n{HELPABLE[module].__HELP__}"
+
 
         await query.message.edit(
             text=text,
@@ -127,7 +123,7 @@ async def help_button(client, query):
         )
 
     elif prev_match:
-        curr_page = int(prev_match.group(1))
+        curr_page = int(prev_match[1])
         await query.message.edit(
             text="Hi {first_name}. I am bot".format(
                 first_name=query.from_user.first_name,
@@ -139,7 +135,7 @@ async def help_button(client, query):
         )
 
     elif next_match:
-        next_page = int(next_match.group(1))
+        next_page = int(next_match[1])
         await query.message.edit(
             text="Hi {first_name}. I am a bot".format(
                 first_name=query.from_user.first_name,
